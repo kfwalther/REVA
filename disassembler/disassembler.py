@@ -20,12 +20,20 @@ class Disassembler():
 		self.fileId = inputFileId
 		self.tempByte = None
 		self.nextByte = None
+		self.byteCounter = 0
 		self.tempInstruction = None
 		self.instructionList = []
+		self.instructionBytesList = []
 
 	def getNextByte(self):
 		self.tempByte = self.nextByte
 		self.nextByte = self.fileId.read(1)
+		self.byteCounter += 1
+		if self.tempInstruction is not None:
+			if self.tempInstruction.byteList is None:
+				self.tempInstruction.byteList = self.tempByte
+			else:
+				self.tempInstruction.byteList += self.tempByte
 		return None
 		
 
@@ -35,18 +43,18 @@ class Disassembler():
 		while(1):
 			# Attempt to process a new instruction.
 			try: 
+				self.tempInstruction = IntelInstruction()
 				self.getNextByte()
 				# Check for the end of the file.
 				if (self.tempByte.hex() == ''):
 					break
-				# if self.tempInstruction is None:
-				self.tempInstruction = IntelInstruction()
 				self.identifyOpcode()
 				self.processModrm()
 				self.tempInstruction.processOperandOrdering()
 				self.processDisplacement()
 				self.processImmediate()
 				self.instructionList.append(self.tempInstruction.mnemonic + ' '  + self.tempInstruction.operands)
+				self.instructionBytesList.append(self.tempInstruction.byteList)
 			except ValueError as err:
 				print('WARNING: ' + err.args[0])
 				continue
@@ -85,7 +93,7 @@ class Disassembler():
 	def processDisplacement(self):
 		# Check if we need to process an 8-bit displacement value.
 		if 'disp8' in self.tempInstruction.operands:
-			self.tempInstruction.operands = self.tempInstruction.operands.replace('disp8', self.nextByte.hex().upper())
+			self.tempInstruction.operands = self.tempInstruction.operands.replace('disp8', '0x' + self.nextByte.hex().upper())
 			self.getNextByte()
 		# Check if we need to process a 32-bit displacement value.
 		elif 'disp32' in self.tempInstruction.operands:
@@ -93,7 +101,7 @@ class Disassembler():
 			tempWord = tempBytes[3]
 			for i in range(0,3):
 				tempWord = tempWord + tempBytes[2-i]
-			self.tempInstruction.operands = self.tempInstruction.operands.replace('disp32', tempWord.hex().upper())
+			self.tempInstruction.operands = self.tempInstruction.operands.replace('disp32', '0x' + tempWord.hex().upper())
 
 	# Process the current immediate.	
 	def processImmediate(self):
@@ -103,11 +111,11 @@ class Disassembler():
 			tempWord = tempBytes[3]
 			for i in range(0,3):
 				tempWord = tempWord + tempBytes[2-i]
-			self.tempInstruction.operands = self.tempInstruction.operands.replace('imm32', tempWord.hex().upper())
+			self.tempInstruction.operands = self.tempInstruction.operands.replace('imm32', '0x' + tempWord.hex().upper())
 			
 	# Define a method to print the parsed instructions.
 	def printInstructions(self):
-		[print(instruction) for instruction in self.instructionList]
+		[print(instBytes.hex().upper() + ':\t' + instruction) for instBytes, instruction in zip(self.instructionBytesList, self.instructionList)]
 
 def processInputFile(inputFile):
 	inputFilePath = os.path.join(os.path.dirname(os.path.abspath(__file__)), inputFile)

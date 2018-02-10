@@ -59,6 +59,7 @@ class IntelInstruction():
 		self.mnemonic = ''
 		self.operands = ''
 		self.opcodeBase, self.offset = None, 0
+		self.byteList = None
 		
 	@property
 	def opcodeHexStringList(self):
