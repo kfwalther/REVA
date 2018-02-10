@@ -71,6 +71,7 @@ class IntelInstruction():
 		
 	# Define a method to check for a 1-byte opcode match.
 	def oneByteOpcodeMatch(self, curByte):
+		# TODO: Implement support for the F2 prefix value (for repne instruction)
 		# Check for an exact match or if the opcode has an offset from its base opcode value.
 		if curByte.hex().upper() in self.opcodeHexStringList:
 			self.opcode = curByte
