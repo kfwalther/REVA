@@ -36,20 +36,21 @@ class Disassembler():
 		self.getNextByte()
 		while(1):
 			# Attempt to process a new instruction.
-			try: 
-				self.getNextByte()
-				# Check for the end of the file.
-				if (self.tempByte.hex() == ''):
-					break
-				# if self.tempInstruction is None:
-				self.tempInstruction = IntelInstruction()
-				self.identifyOpcode()
-				self.processModrm()
-				self.tempInstruction.processOperandOrdering()
-				print(self.tempInstruction.mnemonic + ' '  + self.tempInstruction.operands)
-			except ValueError as err:
-				print('WARNING: ' + err.args[0])
-				continue
+# 			try: 
+			self.getNextByte()
+			# Check for the end of the file.
+			if (self.tempByte.hex() == ''):
+				break
+			# if self.tempInstruction is None:
+			self.tempInstruction = IntelInstruction()
+			self.identifyOpcode()
+			self.processModrm()
+			# TODO: Do we need this function if no MODRM?
+			self.tempInstruction.processOperandOrdering()
+			print(self.tempInstruction.mnemonic + ' '  + self.tempInstruction.operands)
+# 			except ValueError as err:
+# 				print('WARNING: ' + err.args[0])
+# 				continue
 # 			except:
 # 				print('WARNING: Problem processing this instruction!')
 # 				continue
@@ -60,6 +61,8 @@ class Disassembler():
 		# Check for a 1-byte opcode match.
 		if self.tempByte.hex() in self.opcodeHexStringList:
 			self.tempInstruction.opcode = self.tempByte
+		elif self.tempInstruction.checkOpcodeWithinRange(self.tempByte):
+			self.getNextByte()
 		else:
 			tempOpcode = self.tempByte + self.nextByte
 			# Check for a 2-byte opcode match.

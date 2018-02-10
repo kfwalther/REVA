@@ -66,6 +66,18 @@ class IntelInstruction():
 				return True
 		return False
 		
+	# Check if the opcode is within a range (cases where base opcode can have register number added).
+	def checkOpcodeWithinRange(self, curByte):
+		baseOpcodes = [ops for opEn, opList in IntelDefinitions.opcodeOpEnDict.items() if (opEn == 'O') or (opEn == 'OI') for ops in opList]
+		for op in baseOpcodes:
+			if (int.from_bytes(curByte, byteorder='little') > int.from_bytes(bytes.fromhex(op), byteorder='little')) and \
+					(int.from_bytes(curByte, byteorder='little') < (int.from_bytes(bytes.fromhex(op), byteorder='little') + 8)):
+				offset = int.from_bytes(curByte, byteorder='little') - int.from_bytes(bytes.fromhex(op), byteorder='little')
+				print('Found opcode at offset: ' + str(offset))
+				return True
+				# TODO: Set mnemonic and operand here. We should be done!
+		return False	
+			
 	# Process the current MODRM byte.	
 	def processModrm(self, curByte):
 		# Create a new modrm object to track its information.
