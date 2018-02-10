@@ -27,58 +27,57 @@ class Disassembler():
 		self.tempByte = self.nextByte
 		self.nextByte = self.fileId.read(1)
 		
-	@property
-	def opcodeHexStringList(self):
-		return [opcode for opcodeList in IntelDefinitions.opcodeDict.values() for opcode in opcodeList]
 
 	# Process the current byte of data.
 	def processFile(self):
 		self.getNextByte()
 		while(1):
 			# Attempt to process a new instruction.
-# 			try: 
-			self.getNextByte()
-			# Check for the end of the file.
-			if (self.tempByte.hex() == ''):
-				break
-			# if self.tempInstruction is None:
-			self.tempInstruction = IntelInstruction()
-			self.identifyOpcode()
-			self.processModrm()
-			# TODO: Do we need this function if no MODRM?
-			self.tempInstruction.processOperandOrdering()
-			print(self.tempInstruction.mnemonic + ' '  + self.tempInstruction.operands)
-# 			except ValueError as err:
-# 				print('WARNING: ' + err.args[0])
-# 				continue
+			try: 
+				self.getNextByte()
+				# Check for the end of the file.
+				if (self.tempByte.hex() == ''):
+					break
+				# if self.tempInstruction is None:
+				self.tempInstruction = IntelInstruction()
+				self.identifyOpcode()
+				self.processModrm()
+				# TODO: Do we need this function if no MODRM?
+				self.tempInstruction.processOperandOrdering()
+				print(self.tempInstruction.mnemonic + ' '  + self.tempInstruction.operands)
+			except ValueError as err:
+				print('WARNING: ' + err.args[0])
+				continue
 # 			except:
 # 				print('WARNING: Problem processing this instruction!')
 # 				continue
 				
 	# Process the current opcode.	
 	def identifyOpcode(self):
-		print('Processing opcode: ' + self.tempByte.hex())
+# 		print('Processing opcode: ' + self.tempByte.hex().upper())
 		# Check for a 1-byte opcode match.
-		if self.tempByte.hex() in self.opcodeHexStringList:
+		if self.tempInstruction.oneByteOpcodeMatch(self.tempByte):
 			self.tempInstruction.opcode = self.tempByte
-		elif self.tempInstruction.checkOpcodeWithinRange(self.tempByte):
-			self.getNextByte()
 		else:
 			tempOpcode = self.tempByte + self.nextByte
 			# Check for a 2-byte opcode match.
-			if tempOpcode.hex() in self.opcodeHexStringList:
+			if tempOpcode.hex().upper() in self.tempInstruction.opcodeHexStringList:
 				self.tempInstruction.opcode = tempOpcode
 				self.getNextByte()
 			else:
 				# No matching opcode.
 				print('WARNING: Unsupported opcode detected')
-				raise ValueError('Unsupported opcode detected: ' + self.tempByte.hex() + ' or ' + tempOpcode.hex())
+				raise ValueError('Unsupported opcode detected: ' + self.tempByte.hex().upper() + ' or ' + tempOpcode.hex().upper())
 
 	# Process the current MODRM byte.	
 	def processModrm(self):
 		if self.tempInstruction.hasModrm():
+			# Must process MODRM components to determine mnemonic.
 			self.tempInstruction.processModrm(self.nextByte)
 			self.getNextByte()
+		else:
+			# If no MODRM, we have enough info already to determine mnemonic.
+			self.tempInstruction.mnemonic = self.tempInstruction.getMnemonicFromOpcode()
 			
 	# Process the current displacement.	
 	def processDisplacement(self, curChar):
@@ -97,7 +96,7 @@ def processInputFile(inputFile):
 		
 # Begin code execution here.
 if __name__ == "__main__":
-	processInputFile('example1.o')
+	processInputFile('example2.o')
 	print('Successful Completion!')
 	
 

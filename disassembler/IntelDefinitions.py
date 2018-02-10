@@ -20,7 +20,6 @@ registerAddressDict = {
 	'111': 'edi'
 }
 
-
 # Opcodes to instruction mnemonic map.
 opcodeDict = {
 	'add': ['01', '03', '05', '81'],
