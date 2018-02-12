@@ -21,8 +21,7 @@ class Disassembler():
 		self.byteCounter = 0
 		self.tempInstruction = None
 		self.instructionList = []
-		self.instructionBytesList = []
-		self.instructionMemPositionList = []
+		self.jumpLabelList = []
 		
 	def getNextByte(self):
 		self.tempByte = self.nextByte
@@ -38,9 +37,10 @@ class Disassembler():
 	# Process the current byte of data.
 	def processFile(self):
 		self.getNextByte()
-		while(1):
+		# Loop forever, living life on the edge!
+		while (1):
 			# Attempt to process a new instruction.
-			try: 
+			try:
 				self.tempInstruction = IntelInstruction(self.byteCounter - 1)
 				self.getNextByte()
 				# Check for the end of the file.
@@ -89,6 +89,9 @@ class Disassembler():
 		# Check if we need to process an 8-bit displacement value.
 		if self.tempInstruction.DISP8 in self.tempInstruction.operands:
 			self.tempInstruction.operands = self.tempInstruction.operands.replace(self.tempInstruction.DISP8, '0x' + self.nextByte.hex().upper())
+			# Check for a 1-byte displacement jump instruction, so we can save a label.
+			if self.tempInstruction.opcode.hex().upper() in ['74', '75']:
+				self.jumpLabelList.append(int.from_bytes(self.nextByte, byteorder='little') + self.tempInstruction.memoryPosition)
 			self.getNextByte()
 		# Check if we need to process a 32-bit displacement value.
 		elif self.tempInstruction.DISP32 in self.tempInstruction.operands:
@@ -97,7 +100,10 @@ class Disassembler():
 			for i in range(0,3):
 				tempWord = tempWord + tempBytes[2-i]
 			self.tempInstruction.operands = self.tempInstruction.operands.replace(self.tempInstruction.DISP32, '0x' + tempWord.hex().upper())
-
+			# Check for a 4-byte displacement jump instruction, so we can save a label.
+			if self.tempInstruction.opcode.hex().upper() in ['0F84', '0F85', 'E9']:
+				self.jumpLabelList.append(int.from_bytes(tempWord, byteorder='little') + self.tempInstruction.memoryPosition)
+		
 	# Process the current immediate.	
 	def processImmediate(self):
 		# Check if we need to process an 32-bit immediate value.
@@ -111,6 +117,6 @@ class Disassembler():
 	# Define a method to print the parsed instructions.
 	def printInstructions(self):
 		[print(('0x%0.8X' % instruction.memoryPosition) + ':\t' + instruction.byteList.hex().upper() + ':\t' + instruction.mnemonic + ', ' + instruction.operands) for instruction in self.instructionList]
-
+		[print('offset_' + ('0x%0.8X' % entry)) for entry in self.jumpLabelList]
 
 

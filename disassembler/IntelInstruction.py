@@ -164,7 +164,7 @@ class IntelInstruction():
 			self.operands = IntelDefinitions.registerAddressDict['{:03b}'.format(self.offset)] + ', ' + self.IMM32
 		elif operandEncoding == 'D':
 			# Check for size of displacement based on specific opcode.
-			if self.opcodeBase.hex().upper() in ['74', '75', 'EB']:
+			if self.opcodeBase.hex().upper() in ['74', '75']:
 				self.operands = self.DISP8
 			elif self.opcodeBase.hex().upper() in ['E8', '0F84', '0F85', 'E9']:
 				self.operands = self.DISP32
