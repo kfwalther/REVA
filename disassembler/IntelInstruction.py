@@ -60,6 +60,7 @@ class IntelInstruction():
 		self.operands = ''
 		self.opcodeBase, self.offset = None, 0
 		self.byteList = None
+		self.DISP8, self.DISP32, self.IMM32  = 'disp8', 'disp32', 'imm32'
 		
 	@property
 	def opcodeHexStringList(self):
@@ -129,11 +130,11 @@ class IntelInstruction():
 		# Check for memory access addressing mode with 1-byte displacement.
 		elif self.modrm.mod == '01':
 			self.modrm.regString = IntelDefinitions.registerAddressDict[self.modrm.reg]
-			self.modrm.rmString = '[' + IntelDefinitions.registerAddressDict[self.modrm.rm] + '+disp8]'
+			self.modrm.rmString = '[' + IntelDefinitions.registerAddressDict[self.modrm.rm] + '+' + self.DISP8 + ']'
 		# Check for memory access addressing mode with 4-byte displacement.
 		elif self.modrm.mod == '10':
 			self.modrm.regString = IntelDefinitions.registerAddressDict[self.modrm.reg]
-			self.modrm.rmString = '[' + IntelDefinitions.registerAddressDict[self.modrm.rm] + '+disp32]'
+			self.modrm.rmString = '[' + IntelDefinitions.registerAddressDict[self.modrm.rm] + '+' + self.DISP32 + ']'
 		# Check for direct register access addressing mode.
 		elif self.modrm.mod == '11':
 			self.modrm.regString = IntelDefinitions.registerAddressDict[self.modrm.reg]
@@ -146,29 +147,28 @@ class IntelInstruction():
 		if operandEncoding == 'M':
 			self.operands = self.modrm.rmString + ', ' + self.modrm.regString
 		elif operandEncoding == 'MI':
-			self.operands = self.modrm.rmString + ', ' + 'imm32'
+			self.operands = self.modrm.rmString + ', ' + self.IMM32
 		elif operandEncoding == 'MR':
 			self.operands = self.modrm.rmString + ', ' + self.modrm.regString
 		elif operandEncoding == 'RM':
 			self.operands = self.modrm.regString + ', ' + self.modrm.rmString
 		elif operandEncoding == 'RMI':
-			self.operands = self.modrm.regString + ', ' + self.modrm.rmString + ', ' + 'imm32'
+			self.operands = self.modrm.regString + ', ' + self.modrm.rmString + ', ' + self.IMM32
 		elif operandEncoding == 'O':
 			self.operands = IntelDefinitions.registerAddressDict['{:03b}'.format(self.offset)]
 		elif operandEncoding == 'I':
-			self.operands = 'imm32'
+			self.operands = self.IMM32
 		elif operandEncoding == 'OI':
-			self.operands = IntelDefinitions.registerAddressDict['{:03b}'.format(self.offset)] + ', ' + 'imm32'
+			self.operands = IntelDefinitions.registerAddressDict['{:03b}'.format(self.offset)] + ', ' + self.IMM32
 		elif operandEncoding == 'D':
-			self.operands = 'disp32'
+			self.operands = self.DISP32
 		elif operandEncoding == 'FD':
-			self.operands = 'eax, disp32'
+			self.operands = 'eax, ' + self.DISP32
 		elif operandEncoding == 'TD':
-			self.operands = 'disp32, eax'
+			self.operands = self.DISP32 + ', eax'
 		elif operandEncoding == 'ZO':
 			self.operands = ''
 			
-		# TODO: Check for disp8 or disp32 and process displacements.
 		
 		
 		
