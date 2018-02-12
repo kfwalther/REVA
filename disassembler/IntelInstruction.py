@@ -143,6 +143,7 @@ class IntelInstruction():
 	# Define a function to determine the ordering of operands.
 	def processOperandOrdering(self):
 		# Lookup the operand encoding for the opcode, to determine the ordering of operands.
+		# TODO: Fix this lookup, some opcodes can have multiple possible Op/En values.
 		operandEncoding = [opEn for opEn, ops in IntelDefinitions.opcodeOpEnDict.items() if self.opcodeBase.hex().upper() in ops][0]
 		if operandEncoding == 'M':
 			self.operands = self.modrm.rmString + ', ' + self.modrm.regString
@@ -161,7 +162,11 @@ class IntelInstruction():
 		elif operandEncoding == 'OI':
 			self.operands = IntelDefinitions.registerAddressDict['{:03b}'.format(self.offset)] + ', ' + self.IMM32
 		elif operandEncoding == 'D':
-			self.operands = self.DISP32
+			# Check for size of displacement based on specific opcode.
+			if self.opcodeBase.hex().upper() in ['74', '75', 'EB']:
+				self.operands = self.DISP8 + ' '
+			elif self.opcodeBase.hex().upper() in ['E8', '0F84', '0F85', 'E9']:
+				self.operands = self.DISP32
 		elif operandEncoding == 'FD':
 			self.operands = 'eax, ' + self.DISP32
 		elif operandEncoding == 'TD':

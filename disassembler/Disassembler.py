@@ -73,7 +73,6 @@ class Disassembler():
 				self.getNextByte()
 			else:
 				# No matching opcode.
-				print('WARNING: Unsupported opcode detected')
 				raise ValueError('Unsupported opcode detected: ' + self.tempByte.hex().upper() + ' or ' + tempOpcode.hex().upper())
 
 	# Process the current MODRM byte.	
