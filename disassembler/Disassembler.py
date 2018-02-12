@@ -32,8 +32,7 @@ class Disassembler():
 				self.tempInstruction.byteList = self.tempByte
 			else:
 				self.tempInstruction.byteList += self.tempByte
-		return None
-		
+		return None		
 
 	# Process the current byte of data.
 	def processFile(self):
