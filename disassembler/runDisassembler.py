@@ -20,7 +20,7 @@ def processInputFile(inputFile):
 		
 # Begin code execution here.
 if __name__ == "__main__":
-	processInputFile('example2.o')
+	processInputFile('example1.o')
 	print('Successful Completion!')
 	
 

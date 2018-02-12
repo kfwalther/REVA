@@ -22,7 +22,8 @@ class Disassembler():
 		self.tempInstruction = None
 		self.instructionList = []
 		self.instructionBytesList = []
-
+		self.instructionMemPositionList = []
+		
 	def getNextByte(self):
 		self.tempByte = self.nextByte
 		self.nextByte = self.fileId.read(1)
@@ -40,7 +41,7 @@ class Disassembler():
 		while(1):
 			# Attempt to process a new instruction.
 			try: 
-				self.tempInstruction = IntelInstruction()
+				self.tempInstruction = IntelInstruction(self.byteCounter - 1)
 				self.getNextByte()
 				# Check for the end of the file.
 				if (self.tempByte.hex() == ''):
@@ -50,8 +51,7 @@ class Disassembler():
 				self.tempInstruction.processOperandOrdering()
 				self.processDisplacement()
 				self.processImmediate()
-				self.instructionList.append(self.tempInstruction.mnemonic + ' '  + self.tempInstruction.operands)
-				self.instructionBytesList.append(self.tempInstruction.byteList)
+				self.instructionList.append(self.tempInstruction)
 			except ValueError as err:
 				print('WARNING: ' + err.args[0])
 				continue
@@ -61,7 +61,6 @@ class Disassembler():
 				
 	# Process the current opcode.	
 	def identifyOpcode(self):
-# 		print('Processing opcode: ' + self.tempByte.hex().upper())
 		# Check for a 1-byte opcode match.
 		if self.tempInstruction.oneByteOpcodeMatch(self.tempByte):
 			self.tempInstruction.opcode = self.tempByte
@@ -111,7 +110,7 @@ class Disassembler():
 			
 	# Define a method to print the parsed instructions.
 	def printInstructions(self):
-		[print(instBytes.hex().upper() + ':\t' + instruction) for instBytes, instruction in zip(self.instructionBytesList, self.instructionList)]
+		[print(('0x%0.8X' % instruction.memoryPosition) + ':\t' + instruction.byteList.hex().upper() + ':\t' + instruction.mnemonic + ', ' + instruction.operands) for instruction in self.instructionList]
 
 
 

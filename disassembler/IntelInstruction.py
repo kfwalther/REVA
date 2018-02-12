@@ -54,12 +54,13 @@ opcodesWithExtension = {
 # Define a class to hold temporary instructions as we read them.
 class IntelInstruction():
 	
-	def __init__(self):
+	def __init__(self, memPosition):
 		self.prefix, self.opcode, self.modrm, self.displacement, self.immediate = None, None, None, None, None
 		self.mnemonic = ''
 		self.operands = ''
 		self.opcodeBase, self.offset = None, 0
 		self.byteList = None
+		self.memoryPosition = memPosition
 		self.DISP8, self.DISP32, self.IMM32  = 'disp8', 'disp32', 'imm32'
 		
 	@property
@@ -93,7 +94,6 @@ class IntelInstruction():
 			# Check if current opcode is within range: [opcodeBase, opcodeBase + 8]
 			if (curByteInt > opInt) and (curByteInt < (opInt + 8)):
 				self.offset = curByteInt - opInt
-# 				print('Found opcode at offset: ' + str(self.offset))
 				self.opcodeBase = bytes.fromhex(op)
 				return True
 		return False	
@@ -111,11 +111,8 @@ class IntelInstruction():
 		self.modrm = Modrm(curByte)
 		# Check for existence of unsupported SIB byte.
 		if (self.modrm.mod != '11') and (self.modrm.rm == '100'):
-			print('WARNING: SIB byte detected in instruction. This is unsupported!')
-			# throw exception
-			
-		# TODO: Check for address mode '00' and R/M field == '101' (disp32 case)
-		
+			raise ValueError('SIB byte detected in instruction. This is unsupported!')
+					
 		# Check if this opcode has an REG field extension (i.e. this opcode is used with multiple instruction types).
 		if self.opcode.hex().upper() in opcodesWithExtension.keys():
 			self.mnemonic = (opcodesWithExtension[self.opcode.hex().upper()])[self.modrm.reg]
@@ -126,7 +123,11 @@ class IntelInstruction():
 		# Check for memory access addressing mode.
 		if self.modrm.mod == '00':
 			self.modrm.regString = IntelDefinitions.registerAddressDict[self.modrm.reg]
-			self.modrm.rmString = '[' + IntelDefinitions.registerAddressDict[self.modrm.rm] + ']'
+			if self.modrm.rm == '101':
+				# TODO: Check if this interpretation of the MODRM definition is correct...
+				self.modrm.rmString = self.DISP32
+			else:
+				self.modrm.rmString = '[' + IntelDefinitions.registerAddressDict[self.modrm.rm] + ']'
 		# Check for memory access addressing mode with 1-byte displacement.
 		elif self.modrm.mod == '01':
 			self.modrm.regString = IntelDefinitions.registerAddressDict[self.modrm.reg]
@@ -164,7 +165,7 @@ class IntelInstruction():
 		elif operandEncoding == 'D':
 			# Check for size of displacement based on specific opcode.
 			if self.opcodeBase.hex().upper() in ['74', '75', 'EB']:
-				self.operands = self.DISP8 + ' '
+				self.operands = self.DISP8
 			elif self.opcodeBase.hex().upper() in ['E8', '0F84', '0F85', 'E9']:
 				self.operands = self.DISP32
 		elif operandEncoding == 'FD':
