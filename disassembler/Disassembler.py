@@ -91,7 +91,11 @@ class Disassembler():
 			self.tempInstruction.operands = self.tempInstruction.operands.replace(self.tempInstruction.DISP8, '0x' + self.nextByte.hex().upper())
 			# Check for a 1-byte displacement jump instruction, so we can save a label.
 			if self.tempInstruction.opcode.hex().upper() in ['74', '75']:
-				self.jumpLabelList.append(int.from_bytes(self.nextByte, byteorder='little') + self.tempInstruction.memoryPosition)
+				# Calculate the offset, checking for overflow.
+				# TODO: Sign extent these 8-bit values, see 2-byte infinite loop example in notes.
+				# TODO: Is this the correct address to jump to in each 8/32-bit case?
+				jumpOffset = int.from_bytes(self.nextByte, byteorder='little') + self.byteCounter
+				self.jumpLabelList.append(jumpOffset)
 			self.getNextByte()
 		# Check if we need to process a 32-bit displacement value.
 		elif self.tempInstruction.DISP32 in self.tempInstruction.operands:
@@ -102,7 +106,10 @@ class Disassembler():
 			self.tempInstruction.operands = self.tempInstruction.operands.replace(self.tempInstruction.DISP32, '0x' + tempWord.hex().upper())
 			# Check for a 4-byte displacement jump instruction, so we can save a label.
 			if self.tempInstruction.opcode.hex().upper() in ['0F84', '0F85', 'E9']:
-				self.jumpLabelList.append(int.from_bytes(tempWord, byteorder='little') + self.tempInstruction.memoryPosition)
+				# Calculate the offset, checking for overflow.
+				# TODO: Account for overflow here.
+				jumpOffset = int.from_bytes(tempWord, byteorder='little') + self.byteCounter
+				self.jumpLabelList.append(jumpOffset)
 		
 	# Process the current immediate.	
 	def processImmediate(self):
