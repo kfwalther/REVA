@@ -67,6 +67,22 @@ class IntelInstruction():
 	def opcodeHexStringList(self):
 		return [opcode for opcodeList in IntelDefinitions.opcodeDict.values() for opcode in opcodeList]
 		
+	# Define a helper function to perform signed integer addition.
+	def performSignedInt8Addition(self, op1, op2):
+		# Assume operand 2 is the only one we need to worry about (check its sign bit).
+		if (op2 & 0x80):
+			return (op1 + (op2 - 0x100))
+		else:
+			return (op1 + op2)
+	
+	# Define a helper function to perform signed integer addition.
+	def performSignedInt32Addition(self, op1, op2):
+		# Assume operand 2 is the only one we need to worry about (check its sign bit).
+		if (op2 & 0x80000000):
+			return (op1 + (op2 - 0x100000000))
+		else:
+			return (op1 + op2)
+			
 	# Define a function to return the mnemonic for the current opcode (assumes a 1-to-1 mapping).
 	def getMnemonicFromOpcode(self):
 		return [opName for opName, op in IntelDefinitions.opcodeDict.items() if self.opcodeBase.hex().upper() in op][0]
@@ -89,7 +105,7 @@ class IntelInstruction():
 	def checkOpcodeWithinRange(self, curByte):
 		baseOpcodes = [ops for opEn, opList in IntelDefinitions.opcodeOpEnDict.items() if (opEn == 'O') or (opEn == 'OI') for ops in opList]
 		for op in baseOpcodes:
-			opInt = int.from_bytes(bytes.fromhex(op), byteorder='little')
+			opInt = int(op, 16)
 			curByteInt = int.from_bytes(curByte, byteorder='little')
 			# Check if current opcode is within range: [opcodeBase, opcodeBase + 8]
 			if (curByteInt > opInt) and (curByteInt < (opInt + 8)):
