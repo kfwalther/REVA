@@ -160,8 +160,17 @@ class IntelInstruction():
 	# Define a function to determine the ordering of operands.
 	def processOperandOrdering(self):
 		# Lookup the operand encoding for the opcode, to determine the ordering of operands.
-		# TODO: Fix this lookup, some opcodes can have multiple possible Op/En values.
-		operandEncoding = [opEn for opEn, ops in IntelDefinitions.opcodeOpEnDict.items() if self.opcodeBase.hex().upper() in ops][0]
+		operandEncoding = [opEn for opEn, ops in IntelDefinitions.opcodeOpEnDict.items() if self.opcodeBase.hex().upper() in ops]
+		# Account for opcodes that can have multiple operand encodings (right now just F7).
+		if len(operandEncoding) > 1:
+			if self.modrm.reg is '000':
+				# This is the 'F7 /0' case.
+				operandEncoding = 'MI'
+			else:
+				# These are the other 'F7 /X' cases.
+				operandEncoding = 'M'
+		else:
+			operandEncoding = operandEncoding[0]
 		if operandEncoding == 'M':
 			self.operands = self.modrm.rmString + ', ' + self.modrm.regString
 		elif operandEncoding == 'MI':
