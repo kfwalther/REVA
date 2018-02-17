@@ -23,6 +23,7 @@ class Disassembler():
 		self.instructionList = []
 		self.jumpLabelList = []
 		
+	# Define a method to read the next byte from file, and increment counters.
 	def getNextByte(self):
 		self.tempByte = self.nextByte
 		self.nextByte = self.fileId.read(1)
@@ -121,7 +122,20 @@ class Disassembler():
 			
 	# Define a method to print the parsed instructions.
 	def printInstructions(self):
-		[print(('0x%0.8X' % instruction.memoryPosition) + ':\t' + instruction.byteList.hex().upper() + ':\t' + instruction.mnemonic + ', ' + instruction.operands) for instruction in self.instructionList]
-		[print('offset_' + ('0x%0.8X' % entry)) for entry in self.jumpLabelList]
+		lastMemPosition = 0
+		for instruction in self.instructionList:
+			for curLabel in self.jumpLabelList:
+				if ((curLabel > lastMemPosition) and (curLabel <= instruction.memoryPosition)):
+					print('offset_' + ('%0.8X' % curLabel))
+			print(('%0.8X' % instruction.memoryPosition) + ':\t' + instruction.byteList.hex().upper() + '\t' + instruction.mnemonic + ', ' + instruction.operands)
+			lastMemPosition = instruction.memoryPosition
+
+
+
+
+
+
+
+
 
 

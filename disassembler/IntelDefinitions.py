@@ -81,3 +81,13 @@ modrmOpcodesList = ['01', '03', '09', '0B', '0F1F', '0FAF', '19', '1B', '21', '2
 modrmInstructionsList = ['add', 'and', 'cmp', 'dec', 'idiv', 'imul', 
 		'inc', 'jmp', 'lea', 'mov', 'mul', 'neg', 'nop', 'not', 'or', 
 		'pop', 'push', 'sal', 'sar', 'sbb', 'shr', 'test', 'xor']
+
+
+
+
+
+
+
+
+
+

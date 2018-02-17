@@ -67,7 +67,7 @@ class IntelInstruction():
 	def opcodeHexStringList(self):
 		return [opcode for opcodeList in IntelDefinitions.opcodeDict.values() for opcode in opcodeList]
 		
-	# Define a helper function to perform signed integer addition.
+	# Define a helper function to perform 8-bit signed integer addition.
 	def performSignedInt8Addition(self, op1, op2):
 		# Assume operand 2 is the only one we need to worry about (check its sign bit).
 		if (op2 & 0x80):
@@ -75,7 +75,7 @@ class IntelInstruction():
 		else:
 			return (op1 + op2)
 	
-	# Define a helper function to perform signed integer addition.
+	# Define a helper function to perform 32-bit signed integer addition.
 	def performSignedInt32Addition(self, op1, op2):
 		# Assume operand 2 is the only one we need to worry about (check its sign bit).
 		if (op2 & 0x80000000):
@@ -85,6 +85,7 @@ class IntelInstruction():
 			
 	# Define a function to return the mnemonic for the current opcode (assumes a 1-to-1 mapping).
 	def getMnemonicFromOpcode(self):
+		# TODO: Determine if there are cases to consider here (not 1-to-1 mappings).
 		return [opName for opName, op in IntelDefinitions.opcodeDict.items() if self.opcodeBase.hex().upper() in op][0]
 		
 	# Define a method to check for a 1-byte opcode match.
@@ -116,9 +117,8 @@ class IntelInstruction():
 			
 	# Check if the current opcode has a MODRM byte.
 	def hasModrm(self):
-		for opName, op in IntelDefinitions.opcodeDict.items():
-			if self.opcode.hex().upper() in IntelDefinitions.modrmOpcodesList:
-				return True
+		if self.opcode.hex().upper() in IntelDefinitions.modrmOpcodesList:
+			return True
 		return False
 					
 	# Process the current MODRM byte.	
