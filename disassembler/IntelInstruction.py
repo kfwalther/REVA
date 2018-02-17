@@ -84,8 +84,8 @@ class IntelInstruction():
 			return (op1 + op2)
 			
 	# Define a function to return the mnemonic for the current opcode (assumes a 1-to-1 mapping).
+	# Cases which do not have 1-to-1 mapping use opcode extensions, and are handled in processModrm() function.
 	def getMnemonicFromOpcode(self):
-		# TODO: Determine if there are cases to consider here (not 1-to-1 mappings).
 		return [opName for opName, op in IntelDefinitions.opcodeDict.items() if self.opcodeBase.hex().upper() in op][0]
 		
 	# Define a method to check for a 1-byte opcode match.
