@@ -203,10 +203,6 @@ class IntelInstruction():
 				self.operands = self.DISP8
 			elif self.opcodeBase.hex().upper() in ['E8', '0F84', '0F85', 'E9']:
 				self.operands = self.DISP32
-		elif self.operandEncoding == 'FD':
-			self.operands = 'eax, ' + self.DISP32
-		elif self.operandEncoding == 'TD':
-			self.operands = self.DISP32 + ', eax'
 		elif self.operandEncoding == 'ZO':
 			self.operands = ''
 			

@@ -31,20 +31,20 @@ opcodeDict = {
 	'idiv': ['F7'],
 	'imul': ['F7', '0FAF', '69'],
 	'inc': ['FF', '40'],
-	'jmp': ['E9', 'FF'],
+	'jmp': ['E9', 'EB', 'FF'],
 	'jz': ['74', '0F84'],
 	'jnz': ['75', '0F85'],
 	'lea': ['8D'],
-	'mov': ['89', '8B', 'A1', 'A3', 'B8', 'C7'],
+	'mov': ['89', '8B', 'B8', 'C7'],
 	'movsd': ['A5'],
 	'mul': ['F7'],
 	'neg': ['F7'],
-	'nop': ['90', '0F1F'],
+	'nop': ['90'],
 	'not': ['F7'],
 	'or': ['0D', '81', '09', '0B'],
-	'out': ['EE', 'EF'],
-	'pop': ['8F', '58', '1F', '07', '17', '0FA1', '0FA9'],
-	'push': ['FF', '50', '68', '0E', '16', '1E', '06', '0FA0', '0FA8'],
+	'out': ['EE', 'EF'], 	# TODO: Add 'E7' (an IMM8) and remove the other two
+	'pop': ['8F', '58'],
+	'push': ['FF', '50', '68'],
 	'repne cmpsd': ['A7'],
 	'retf': ['CA', 'CB'],
 	'retn': ['C2', 'C3'],
@@ -57,7 +57,7 @@ opcodeDict = {
 }
 # Opcodes to operand encoding map.
 opcodeOpEnDict = {
-	'M': ['FF', '0FAE', 'F7', '0F1F', '8F'],
+	'M': ['FF', '0FAE', 'F7', '8F'],
 	'M1': ['D1'],
 	'MI': ['81', 'C7', 'F7'],
 	'MR': ['01', '31', '21', '39', '89', '09', '19', '85'],
@@ -66,21 +66,18 @@ opcodeOpEnDict = {
 	'O': ['48', '40', '58', '50'],
 	'I': ['05', '25', '3D', '0D', '68', 'C2', 'CA', '1D', 'A9', '35'],
 	'OI': ['B8'],
-	'D': ['E8', 'E9', '74', '0F84', '75', '0F85'],
-	'ZO': ['A5', '90', 'EE', 'EF', '1F', '07', '17', '0FA1', '0FA9', '0E', 
-			'16', '1E', '06', '0FA0', '0FA8', 'A7', 'CB', 'C3'],
-	'FD': ['A1'],
-	'TD': ['A3']
+	'D': ['E8', 'E9', 'EB', '74', '0F84', '75', '0F85'],
+	'ZO': ['A5', '90', 'EE', 'EF', 'A7', 'CB', 'C3']
 }
 
 prefixList = ['F0', 'F2', 'F3', '2E', '36', '3E', '26', '64', '65', '66', '67']
 
 # Define a list of opcodes that are accompanied by a MODRM byte.
-modrmOpcodesList = ['01', '03', '09', '0B', '0F1F', '0FAF', '19', '1B', '21', '23', '31', '33', 
+modrmOpcodesList = ['01', '03', '09', '0B', '0FAF', '19', '1B', '21', '23', '31', '33', 
 		'39', '3B', '69', '81', '85', '89', '8B', '8D', '8F', 'C7', 'D1', 'F7', 'FF'] 
 # Define a list of instructions that often use a MODRM byte.
 modrmInstructionsList = ['add', 'and', 'cmp', 'dec', 'idiv', 'imul', 
-		'inc', 'jmp', 'lea', 'mov', 'mul', 'neg', 'nop', 'not', 'or', 
+		'inc', 'jmp', 'lea', 'mov', 'mul', 'neg', 'not', 'or', 
 		'pop', 'push', 'sal', 'sar', 'sbb', 'shr', 'test', 'xor']
 
 
