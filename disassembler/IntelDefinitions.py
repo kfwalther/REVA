@@ -45,7 +45,7 @@ opcodeDict = {
 	'out': ['EE', 'EF'],
 	'pop': ['8F', '58', '1F', '07', '17', '0FA1', '0FA9'],
 	'push': ['FF', '50', '68', '0E', '16', '1E', '06', '0FA0', '0FA8'],
-	'repne cmpsd': ['F2A7'],
+	'repne cmpsd': ['A7'],
 	'retf': ['CA', 'CB'],
 	'retn': ['C2', 'C3'],
 	'sal': ['D1'],
@@ -68,11 +68,12 @@ opcodeOpEnDict = {
 	'OI': ['B8'],
 	'D': ['E8', 'E9', '74', '0F84', '75', '0F85'],
 	'ZO': ['A5', '90', 'EE', 'EF', '1F', '07', '17', '0FA1', '0FA9', '0E', 
-			'16', '1E', '06', '0FA0', '0FA8', 'F2A7', 'CB', 'C3'],
+			'16', '1E', '06', '0FA0', '0FA8', 'A7', 'CB', 'C3'],
 	'FD': ['A1'],
 	'TD': ['A3']
 }
 
+prefixList = ['F0', 'F2', 'F3', '2E', '36', '3E', '26', '64', '65', '66', '67']
 
 # Define a list of opcodes that are accompanied by a MODRM byte.
 modrmOpcodesList = ['01', '03', '09', '0B', '0F1F', '0FAF', '19', '1B', '21', '23', '31', '33', 

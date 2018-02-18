@@ -101,7 +101,7 @@ class IntelInstruction():
 			return True
 		else:
 			return False
-
+		
 	# Check if the opcode is within a range (cases where base opcode can have register number added).
 	def checkOpcodeWithinRange(self, curByte):
 		baseOpcodes = [ops for opEn, opList in IntelDefinitions.opcodeOpEnDict.items() if (opEn == 'O') or (opEn == 'OI') for ops in opList]
@@ -163,8 +163,8 @@ class IntelInstruction():
 		operandEncoding = [opEn for opEn, ops in IntelDefinitions.opcodeOpEnDict.items() if self.opcodeBase.hex().upper() in ops]
 		# Account for opcodes that can have multiple operand encodings (right now just F7).
 		if len(operandEncoding) > 1:
-			if self.modrm.reg is '000':
-				# This is the 'F7 /0' case.
+			if self.modrm.reg == '000':
+				# This is the 'F7 /0' case (TEST instruction).
 				operandEncoding = 'MI'
 			else:
 				# These are the other 'F7 /X' cases.

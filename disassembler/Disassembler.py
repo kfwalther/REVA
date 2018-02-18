@@ -47,6 +47,7 @@ class Disassembler():
 				# Check for the end of the file.
 				if (self.tempByte.hex() == ''):
 					break
+				self.processPrefix()
 				self.identifyOpcode()
 				self.processModrm()
 				self.tempInstruction.processOperandOrdering()
@@ -60,6 +61,14 @@ class Disassembler():
 # 				print('WARNING: Problem processing this instruction!')
 # 				continue
 				
+	# Define a method to identify and save any prefixes that are encountered.
+	def processPrefix(self):
+		if self.tempByte.hex().upper() in IntelDefinitions.prefixList:
+			# Currently only supporting the 'F2' prefix (REPNE).
+			if self.tempByte.hex().upper() == 'F2':
+				self.tempInstruction.prefix = self.tempByte
+				self.getNextByte()
+		
 	# Process the current opcode.	
 	def identifyOpcode(self):
 		# Check for a 1-byte opcode match.
@@ -123,10 +132,10 @@ class Disassembler():
 			self.tempInstruction.operands = self.tempInstruction.operands.replace(self.tempInstruction.DISP32, ('offset_' + ('%0.8X' % offset)))
 		else:
 			self.tempInstruction.operands = self.tempInstruction.operands.replace(self.tempInstruction.DISP32, '0x' + tempWord.hex().upper())
-
 	
 	# Process the current immediate.	
 	def processImmediate(self):
+		# TODO: Implement immediate processing for 16-bit returns.
 		# Check if we need to process an 32-bit immediate value.
 		if self.tempInstruction.IMM32 in self.tempInstruction.operands:	
 			tempBytes = [self.tempByte for i in range(0,4) if self.getNextByte() is None]	
