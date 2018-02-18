@@ -56,6 +56,9 @@ class Disassembler():
 				self.processImmediate()
 				self.instructionList.append(self.tempInstruction)
 			except ValueError as err:
+				# Save the unsupported byte or instruction to display to user.
+				self.tempInstruction.mnemonic = '(Unknown instruction)'
+				self.instructionList.append(self.tempInstruction)
 				print('WARNING: ' + err.args[0])
 				continue
 # 			except:
@@ -83,17 +86,14 @@ class Disassembler():
 				self.getNextByte()
 			else:
 				# No matching opcode.
-				# TODO: Complete the handling of the 'Unknown byte' cases (perhaps handle this in the catch statement, as all ValueError exceptions should trigger it). 
-				self.tempInstruction.mnemonic = '(Unknown byte)'
-				self.instructionList.append(self.tempInstruction)
 				raise ValueError('Unsupported opcode detected: ' + self.tempByte.hex().upper() + ' or ' + tempOpcode.hex().upper())
 
-	# Process the current MODRM byte.	
+	# Process the current MODRM byte.
 	def processModrm(self):
 		if self.tempInstruction.hasModrm():
 			# Must process MODRM components to determine mnemonic.
-			self.tempInstruction.processModrm(self.nextByte)
 			self.getNextByte()
+			self.tempInstruction.processModrm(self.tempByte)
 		else:
 			# If no MODRM, we have enough info already to determine mnemonic.
 			self.tempInstruction.mnemonic = self.tempInstruction.getMnemonicFromOpcode()

@@ -113,7 +113,7 @@ class IntelInstruction():
 				self.offset = curByteInt - opInt
 				self.opcodeBase = bytes.fromhex(op)
 				return True
-		return False	
+		return False
 			
 	# Check if the current opcode has a MODRM byte.
 	def hasModrm(self):
