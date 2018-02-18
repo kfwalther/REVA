@@ -131,7 +131,10 @@ class IntelInstruction():
 					
 		# Check if this opcode has an REG field extension (i.e. this opcode is used with multiple instruction types).
 		if self.opcode.hex().upper() in opcodesWithExtension.keys():
-			self.mnemonic = (opcodesWithExtension[self.opcode.hex().upper()])[self.modrm.reg]
+			# Use get() function with dictionaries. If key doesn't exist, still returns a value.
+			self.mnemonic = (opcodesWithExtension[self.opcode.hex().upper()]).get(self.modrm.reg, '')
+			if self.mnemonic == '':
+				raise ValueError('Invalid MODRM byte detected!')
 		# Otherwise, one-to-one mapping from opcode to instruction type.
 		else:
 			self.mnemonic = self.getMnemonicFromOpcode()

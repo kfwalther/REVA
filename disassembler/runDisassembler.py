@@ -20,7 +20,8 @@ def processInputFile(inputFile):
 		
 # Begin code execution here.
 if __name__ == "__main__":
-	processInputFile('example3.o')
+	# TODO: Determine if we should print to file or std::out.
+	processInputFile('example2.o')
 	print('Successful Completion!')
 	
 
