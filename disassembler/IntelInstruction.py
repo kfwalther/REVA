@@ -142,9 +142,7 @@ class IntelInstruction():
 		# Check for invalid LEA instruction format.
 		if ((self.mnemonic == 'lea') and (self.modrm.mod == '11')):
 			raise ValueError('Illegal LEA instruction detected!')
-		
-		# TODO: Ensure square brackets on LEA and CLFLUSH are applied properly.
-		
+				
 		# Check for memory access addressing mode.
 		if self.modrm.mod == '00':
 			self.modrm.regString = IntelDefinitions.registerAddressDict[self.modrm.reg]
@@ -205,7 +203,7 @@ class IntelInstruction():
 			self.operands = IntelDefinitions.registerAddressDict['{:03b}'.format(self.offset)] + ', ' + self.IMM32
 		elif self.operandEncoding == 'D':
 			# Check for size of displacement based on specific opcode.
-			if self.opcodeBase.hex().upper() in ['74', '75']:
+			if self.opcodeBase.hex().upper() in ['74', '75', 'EB']:
 				self.operands = self.DISP8
 			elif self.opcodeBase.hex().upper() in ['E8', '0F84', '0F85', 'E9']:
 				self.operands = self.DISP32

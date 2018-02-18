@@ -35,7 +35,7 @@ class Disassembler():
 				self.tempInstruction.byteList += self.tempByte
 		return None
 
-	# Process the current byte of data.
+	# Define a method to execute the main functions of linear sweep algorithm. 
 	def processFile(self):
 		self.getNextByte()
 		# Loop forever, living life on the edge!
@@ -44,8 +44,7 @@ class Disassembler():
 			try:
 				self.tempInstruction = IntelInstruction(self.byteCounter - 1)
 				self.getNextByte()
-				# Check for the end of the file.
-				# TODO: Is there a more sure-fire way to exit?
+				# Check for the end of the file (empty string is returned on EOF).
 				if (self.tempByte.hex() == ''):
 					break
 				self.processPrefix()
@@ -112,7 +111,6 @@ class Disassembler():
 		# Check for a displacement jump/call instruction, so we can save a label.
 		if self.tempInstruction.operandEncoding is 'D':
 			# Calculate the offset, checking for overflow.
-			# TODO: Is this the correct address to jump to in each 8/32-bit case?
 			offset = self.tempInstruction.performSignedInt8Addition(
 					self.byteCounter, int.from_bytes(self.nextByte, byteorder='little'))
 			self.jumpLabelList.append(offset)
