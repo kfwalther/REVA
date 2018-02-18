@@ -78,7 +78,6 @@ class IntelInstruction():
 	
 	# Define a helper function to perform 32-bit signed integer addition.
 	def performSignedInt32Addition(self, op1, op2):
-		print('Op1: ' + str(op1) + ' Op2: ' + str(op2))
 		# Assume operand 2 is the only one we need to worry about (check its sign bit).
 		if (op2 & 0x80000000):
 			return (op1 + (op2 - 0x100000000))
