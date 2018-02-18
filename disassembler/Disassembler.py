@@ -138,7 +138,11 @@ class Disassembler():
 	
 	# Process the current immediate.	
 	def processImmediate(self):
-		# Check if we need to process an 16-bit immediate value.
+		# Check if we need to process an 8-bit immediate value (OUT instruction).
+		if self.tempInstruction.IMM8 in self.tempInstruction.operands:
+			self.tempInstruction.operands = self.tempInstruction.operands.replace(self.tempInstruction.IMM8, '0x' + self.nextByte.hex().upper())
+			self.getNextByte()
+		# Check if we need to process an 16-bit immediate value (RET instructions).
 		if self.tempInstruction.IMM16 in self.tempInstruction.operands:	
 			tempBytes = [self.tempByte for i in range(0,2) if self.getNextByte() is None]	
 			tempWord = tempBytes[1] + tempBytes[0]
@@ -146,9 +150,7 @@ class Disassembler():
 		# Check if we need to process an 32-bit immediate value.
 		if self.tempInstruction.IMM32 in self.tempInstruction.operands:	
 			tempBytes = [self.tempByte for i in range(0,4) if self.getNextByte() is None]	
-			tempWord = tempBytes[3]
-			for i in range(0,3):
-				tempWord = tempWord + tempBytes[2-i]
+			tempWord = tempBytes[3] + tempBytes[2] + tempBytes[1] + tempBytes[0]
 			self.tempInstruction.operands = self.tempInstruction.operands.replace(self.tempInstruction.IMM32, '0x' + tempWord.hex().upper())
 			
 	# Define a method to print the parsed instructions.

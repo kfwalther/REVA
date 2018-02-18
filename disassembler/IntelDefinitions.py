@@ -42,7 +42,7 @@ opcodeDict = {
 	'nop': ['90'],
 	'not': ['F7'],
 	'or': ['0D', '81', '09', '0B'],
-	'out': ['EE', 'EF'], 	# TODO: Add 'E7' (an IMM8) and remove the other two
+	'out': ['E7'],
 	'pop': ['8F', '58'],
 	'push': ['FF', '50', '68'],
 	'repne cmpsd': ['A7'],
@@ -67,7 +67,7 @@ opcodeOpEnDict = {
 	'I': ['05', '25', '3D', '0D', '68', 'C2', 'CA', '1D', 'A9', '35'],
 	'OI': ['B8'],
 	'D': ['E8', 'E9', 'EB', '74', '0F84', '75', '0F85'],
-	'ZO': ['A5', '90', 'EE', 'EF', 'A7', 'CB', 'C3']
+	'ZO': ['A5', '90', 'A7', 'CB', 'C3']
 }
 
 prefixList = ['F0', 'F2', 'F3', '2E', '36', '3E', '26', '64', '65', '66', '67']

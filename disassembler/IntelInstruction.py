@@ -62,7 +62,7 @@ class IntelInstruction():
 		self.opcodeBase, self.offset = None, 0
 		self.byteList = None
 		self.memoryPosition = memPosition
-		self.DISP8, self.DISP32, self.IMM16, self.IMM32  = 'disp8', 'disp32', 'imm16', 'imm32'
+		self.DISP8, self.DISP32, self.IMM8, self.IMM16, self.IMM32  = 'disp8', 'disp32', 'imm8', 'imm16', 'imm32'
 		
 	@property
 	def opcodeHexStringList(self):
@@ -190,6 +190,9 @@ class IntelInstruction():
 		elif self.operandEncoding == 'O':
 			self.operands = IntelDefinitions.registerAddressDict['{:03b}'.format(self.offset)]
 		elif self.operandEncoding == 'I':
+			# Check for OUT instruction, which is actually an 8-bit immediate value.
+			if self.opcodeBase.hex().upper() == 'E7':
+				self.operands = self.IMM8
 			# Check for the return instructions, which are only 16-bit immediate values.
 			if self.opcodeBase.hex().upper() in ['C2', 'CA']:
 				self.operands = self.IMM16
