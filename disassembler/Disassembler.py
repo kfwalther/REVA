@@ -77,12 +77,12 @@ class Disassembler():
 	def identifyOpcode(self):
 		# Check for a 1-byte opcode match.
 		if self.tempInstruction.oneByteOpcodeMatch(self.tempByte):
-			self.tempInstruction.opcode = self.tempByte
+			return
 		else:
 			tempOpcode = self.tempByte + self.nextByte
 			# Check for a 2-byte opcode match.
 			if tempOpcode.hex().upper() in self.tempInstruction.opcodeHexStringList:
-				self.tempInstruction.opcode = tempOpcode
+				self.tempInstruction.opcode = self.tempInstruction.opcodeBase = tempOpcode
 				self.getNextByte()
 			else:
 				# No matching opcode.

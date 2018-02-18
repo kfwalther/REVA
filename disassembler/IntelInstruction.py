@@ -93,8 +93,7 @@ class IntelInstruction():
 	def oneByteOpcodeMatch(self, curByte):
 		# Check for an exact match or if the opcode has an offset from its base opcode value.
 		if curByte.hex().upper() in self.opcodeHexStringList:
-			self.opcode = curByte
-			self.opcodeBase = curByte
+			self.opcode = self.opcodeBase = curByte
 			return True
 		elif self.checkOpcodeWithinRange(curByte):
 			self.opcode = curByte
@@ -125,6 +124,7 @@ class IntelInstruction():
 	def processModrm(self, curByte):
 		# Create a new modrm object to track its information.
 		self.modrm = Modrm(curByte)
+
 		# Check for existence of unsupported SIB byte.
 		if (self.modrm.mod != '11') and (self.modrm.rm == '100'):
 			raise ValueError('SIB byte detected in instruction. This is unsupported!')
@@ -181,7 +181,7 @@ class IntelInstruction():
 		else:
 			self.operandEncoding = operandEncoding[0]
 		if self.operandEncoding == 'M':
-			self.operands = self.modrm.rmString + ', ' + self.modrm.regString
+			self.operands = self.modrm.rmString
 		elif self.operandEncoding == 'MI':
 			self.operands = self.modrm.rmString + ', ' + self.IMM32
 		elif self.operandEncoding == 'MR':

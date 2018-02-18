@@ -73,7 +73,7 @@ opcodeOpEnDict = {
 prefixList = ['F0', 'F2', 'F3', '2E', '36', '3E', '26', '64', '65', '66', '67']
 
 # Define a list of opcodes that are accompanied by a MODRM byte.
-modrmOpcodesList = ['01', '03', '09', '0B', '0FAF', '19', '1B', '21', '23', '31', '33', 
+modrmOpcodesList = ['01', '03', '09', '0B', '0FAE', '0FAF', '19', '1B', '21', '23', '31', '33', 
 		'39', '3B', '69', '81', '85', '89', '8B', '8D', '8F', 'C7', 'D1', 'F7', 'FF'] 
 # Define a list of instructions that often use a MODRM byte.
 modrmInstructionsList = ['add', 'and', 'cmp', 'dec', 'idiv', 'imul', 
