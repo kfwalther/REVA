@@ -135,7 +135,11 @@ class Disassembler():
 	
 	# Process the current immediate.	
 	def processImmediate(self):
-		# TODO: Implement immediate processing for 16-bit returns.
+		# Check if we need to process an 16-bit immediate value.
+		if self.tempInstruction.IMM16 in self.tempInstruction.operands:	
+			tempBytes = [self.tempByte for i in range(0,2) if self.getNextByte() is None]	
+			tempWord = tempBytes[1] + tempBytes[0]
+			self.tempInstruction.operands = self.tempInstruction.operands.replace(self.tempInstruction.IMM16, '0x' + tempWord.hex().upper())
 		# Check if we need to process an 32-bit immediate value.
 		if self.tempInstruction.IMM32 in self.tempInstruction.operands:	
 			tempBytes = [self.tempByte for i in range(0,4) if self.getNextByte() is None]	
