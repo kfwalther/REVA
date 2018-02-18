@@ -105,8 +105,8 @@ class Disassembler():
 		
 	# Process a 1-byte displacement.	
 	def processByteDisplacement(self):
-		# Check for a 1-byte displacement jump instruction, so we can save a label.
-		if self.tempInstruction.opcode.hex().upper() in ['74', '75']:
+		# Check for a displacement jump/call instruction, so we can save a label.
+		if self.tempInstruction.operandEncoding is 'D':
 			# Calculate the offset, checking for overflow.
 			# TODO: Is this the correct address to jump to in each 8/32-bit case?
 			offset = self.tempInstruction.performSignedInt8Addition(
@@ -120,14 +120,14 @@ class Disassembler():
 	# Process a double word displacement (32 bits).
 	def processDoubleWordDisplacement(self):
 		tempBytes = [self.tempByte for i in range(0,4) if self.getNextByte() is None]	
-		tempWord = tempBytes[3]
-		for i in range(0,3):
-			tempWord = tempWord + tempBytes[2-i]
+		tempWord = tempBytes[0] + tempBytes[1] + tempBytes[2] + tempBytes[3]
+		print('Displacement: ' + tempWord.hex().upper())
 		# Check for a 4-byte displacement jump instruction, so we can save a label.
-		if self.tempInstruction.opcode.hex().upper() in ['0F84', '0F85', 'E9']:
+		if self.tempInstruction.operandEncoding is 'D':
 			# Calculate the offset, checking for overflow.
 			offset = self.tempInstruction.performSignedInt32Addition(
 					self.byteCounter, int.from_bytes(tempWord, byteorder='little'))
+			print('Displacement: ' + str(offset))
 			self.jumpLabelList.append(offset)
 			self.tempInstruction.operands = self.tempInstruction.operands.replace(self.tempInstruction.DISP32, ('offset_' + ('%0.8X' % offset)))
 		else:

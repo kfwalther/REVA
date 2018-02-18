@@ -58,6 +58,7 @@ class IntelInstruction():
 		self.prefix, self.opcode, self.modrm, self.displacement, self.immediate = None, None, None, None, None
 		self.mnemonic = ''
 		self.operands = ''
+		self.operandEncoding = ''
 		self.opcodeBase, self.offset = None, 0
 		self.byteList = None
 		self.memoryPosition = memPosition
@@ -77,6 +78,7 @@ class IntelInstruction():
 	
 	# Define a helper function to perform 32-bit signed integer addition.
 	def performSignedInt32Addition(self, op1, op2):
+		print('Op1: ' + str(op1) + ' Op2: ' + str(op2))
 		# Assume operand 2 is the only one we need to worry about (check its sign bit).
 		if (op2 & 0x80000000):
 			return (op1 + (op2 - 0x100000000))
@@ -90,7 +92,6 @@ class IntelInstruction():
 		
 	# Define a method to check for a 1-byte opcode match.
 	def oneByteOpcodeMatch(self, curByte):
-		# TODO: Implement support for the F2 prefix value (for repne instruction)
 		# Check for an exact match or if the opcode has an offset from its base opcode value.
 		if curByte.hex().upper() in self.opcodeHexStringList:
 			self.opcode = curByte
@@ -165,43 +166,43 @@ class IntelInstruction():
 		if len(operandEncoding) > 1:
 			if self.modrm.reg == '000':
 				# This is the 'F7 /0' case (TEST instruction).
-				operandEncoding = 'MI'
+				self.operandEncoding = 'MI'
 			else:
 				# These are the other 'F7 /X' cases.
-				operandEncoding = 'M'
+				self.operandEncoding = 'M'
 		else:
-			operandEncoding = operandEncoding[0]
-		if operandEncoding == 'M':
+			self.operandEncoding = operandEncoding[0]
+		if self.operandEncoding == 'M':
 			self.operands = self.modrm.rmString + ', ' + self.modrm.regString
-		elif operandEncoding == 'MI':
+		elif self.operandEncoding == 'MI':
 			self.operands = self.modrm.rmString + ', ' + self.IMM32
-		elif operandEncoding == 'MR':
+		elif self.operandEncoding == 'MR':
 			self.operands = self.modrm.rmString + ', ' + self.modrm.regString
-		elif operandEncoding == 'RM':
+		elif self.operandEncoding == 'RM':
 			self.operands = self.modrm.regString + ', ' + self.modrm.rmString
-		elif operandEncoding == 'RMI':
+		elif self.operandEncoding == 'RMI':
 			self.operands = self.modrm.regString + ', ' + self.modrm.rmString + ', ' + self.IMM32
-		elif operandEncoding == 'O':
+		elif self.operandEncoding == 'O':
 			self.operands = IntelDefinitions.registerAddressDict['{:03b}'.format(self.offset)]
-		elif operandEncoding == 'I':
+		elif self.operandEncoding == 'I':
 			# Check for the return instructions, which are only 16-bit immediate values.
 			if self.opcodeBase.hex().upper() in ['C2', 'CA']:
 				self.operands = self.IMM16
 			else:
 				self.operands = self.IMM32
-		elif operandEncoding == 'OI':
+		elif self.operandEncoding == 'OI':
 			self.operands = IntelDefinitions.registerAddressDict['{:03b}'.format(self.offset)] + ', ' + self.IMM32
-		elif operandEncoding == 'D':
+		elif self.operandEncoding == 'D':
 			# Check for size of displacement based on specific opcode.
 			if self.opcodeBase.hex().upper() in ['74', '75']:
 				self.operands = self.DISP8
 			elif self.opcodeBase.hex().upper() in ['E8', '0F84', '0F85', 'E9']:
 				self.operands = self.DISP32
-		elif operandEncoding == 'FD':
+		elif self.operandEncoding == 'FD':
 			self.operands = 'eax, ' + self.DISP32
-		elif operandEncoding == 'TD':
+		elif self.operandEncoding == 'TD':
 			self.operands = self.DISP32 + ', eax'
-		elif operandEncoding == 'ZO':
+		elif self.operandEncoding == 'ZO':
 			self.operands = ''
 			
 		
