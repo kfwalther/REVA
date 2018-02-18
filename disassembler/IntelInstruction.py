@@ -136,6 +136,12 @@ class IntelInstruction():
 		else:
 			self.mnemonic = self.getMnemonicFromOpcode()
 			
+		# Check for invalid LEA instruction format.
+		if ((self.mnemonic == 'lea') and (self.modrm.mod == '11')):
+			raise ValueError('Illegal LEA instruction detected!')
+		
+		# TODO: Ensure square brackets on LEA and CLFLUSH are applied properly.
+		
 		# Check for memory access addressing mode.
 		if self.modrm.mod == '00':
 			self.modrm.regString = IntelDefinitions.registerAddressDict[self.modrm.reg]

@@ -45,6 +45,7 @@ class Disassembler():
 				self.tempInstruction = IntelInstruction(self.byteCounter - 1)
 				self.getNextByte()
 				# Check for the end of the file.
+				# TODO: Is there a more sure-fire way to exit?
 				if (self.tempByte.hex() == ''):
 					break
 				self.processPrefix()
@@ -82,6 +83,9 @@ class Disassembler():
 				self.getNextByte()
 			else:
 				# No matching opcode.
+				# TODO: Complete the handling of the 'Unknown byte' cases (perhaps handle this in the catch statement, as all ValueError exceptions should trigger it). 
+				self.tempInstruction.mnemonic = '(Unknown byte)'
+				self.instructionList.append(self.tempInstruction)
 				raise ValueError('Unsupported opcode detected: ' + self.tempByte.hex().upper() + ' or ' + tempOpcode.hex().upper())
 
 	# Process the current MODRM byte.	
@@ -154,7 +158,7 @@ class Disassembler():
 			for curLabel in self.jumpLabelList:
 				if ((curLabel > lastMemPosition) and (curLabel <= instruction.memoryPosition)):
 					print('offset_' + ('%0.8X' % curLabel))
-			print(('%0.8X' % instruction.memoryPosition) + ':\t' + instruction.byteList.hex().upper() + '\t' + instruction.mnemonic + ', ' + instruction.operands)
+			print(('%0.8X' % instruction.memoryPosition) + ':\t' + instruction.byteList.hex().upper() + '\t' + instruction.mnemonic + ' ' + instruction.operands)
 			lastMemPosition = instruction.memoryPosition
 
 
