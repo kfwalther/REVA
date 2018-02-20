@@ -180,6 +180,8 @@ class IntelInstruction():
 			self.operandEncoding = operandEncoding[0]
 		if self.operandEncoding == 'M':
 			self.operands = self.modrm.rmString
+		if self.operandEncoding == 'M1':
+			self.operands = self.modrm.rmString	+ ', 1'		
 		elif self.operandEncoding == 'MI':
 			self.operands = self.modrm.rmString + ', ' + self.IMM32
 		elif self.operandEncoding == 'MR':
