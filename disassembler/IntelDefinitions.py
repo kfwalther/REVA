@@ -2,8 +2,7 @@
 
 @author: Kevin Walther
 @assignment: RE/VA 695.744 Spring 2018 - Homework 2
-@class: IntelDefinitions
-@brief: This file stores some of the global Intel instruction definitions and relationships defined in the manual.
+@brief: This file stores some of the global Intel instruction definitions and attributes defined in the manual.
 
 '''
 

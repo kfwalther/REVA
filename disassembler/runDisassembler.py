@@ -1,9 +1,8 @@
 '''
 
 @author: Kevin Walther
-@class: RE/VA 695.744 Spring 2018
-@assignment: Homework 2
-@brief: This Python program implements a disassembler.
+@assignment: RE/VA 695.744 Spring 2018 - Homework 2
+@brief: This Python program implements a disassembler using a linear sweep algorithm.
 
 '''
 
@@ -21,8 +20,8 @@ def processInputFile(inputFile):
 # Begin code execution here.
 if __name__ == "__main__":
 	# TODO: Determine if we should print to file or std::out.
-	processInputFile('example2.o')
-	print('Successful Completion!')
+	processInputFile('example3.o')
+# 	print('Successful Completion!')
 	
 
 

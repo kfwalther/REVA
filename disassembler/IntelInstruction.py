@@ -139,8 +139,8 @@ class IntelInstruction():
 		else:
 			self.mnemonic = self.getMnemonicFromOpcode()
 			
-		# Check for invalid LEA instruction format.
-		if ((self.mnemonic == 'lea') and (self.modrm.mod == '11')):
+		# Check for invalid LEA/CLFLUSH instruction usage.
+		if ((self.mnemonic in ['lea','clflush']) and (self.modrm.mod == '11')):
 			raise ValueError('Illegal LEA instruction detected!')
 				
 		# Check for memory access addressing mode.
@@ -178,9 +178,10 @@ class IntelInstruction():
 				self.operandEncoding = 'M'
 		else:
 			self.operandEncoding = operandEncoding[0]
+		# Set up the operand template using the Op/En of this opcode.
 		if self.operandEncoding == 'M':
 			self.operands = self.modrm.rmString
-		if self.operandEncoding == 'M1':
+		elif self.operandEncoding == 'M1':
 			self.operands = self.modrm.rmString	+ ', 1'		
 		elif self.operandEncoding == 'MI':
 			self.operands = self.modrm.rmString + ', ' + self.IMM32

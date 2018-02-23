@@ -35,7 +35,7 @@ class Disassembler():
 				self.tempInstruction.byteList += self.tempByte
 		return None
 
-	# Define a method to execute the main functions of linear sweep algorithm. 
+	# Define a method to execute the linear sweep algorithm, and primary functions of instruction identification. 
 	def processFile(self):
 		self.getNextByte()
 		# Loop forever, living life on the edge!
@@ -58,11 +58,11 @@ class Disassembler():
 				# Save the unsupported byte or instruction to display to user.
 				self.tempInstruction.mnemonic = '(Unknown instruction)'
 				self.instructionList.append(self.tempInstruction)
-				print('WARNING: ' + err.args[0])
+# 				print('WARNING: ' + err.args[0])
 				continue
-# 			except:
+			except:
 # 				print('WARNING: Problem processing this instruction!')
-# 				continue
+				continue
 				
 	# Define a method to identify and save any prefixes that are encountered.
 	def processPrefix(self):
@@ -158,7 +158,9 @@ class Disassembler():
 			for curLabel in self.jumpLabelList:
 				if ((curLabel > lastMemPosition) and (curLabel <= instruction.memoryPosition)):
 					print('offset_' + ('%0.8X' % curLabel))
-			print(('%0.8X' % instruction.memoryPosition) + ':\t' + instruction.byteList.hex().upper() + '\t' + instruction.mnemonic + ' ' + instruction.operands)
+			print(('%0.8X' % instruction.memoryPosition) + ':\t' + 
+					'{:{align}{width}}'.format(instruction.byteList.hex().upper(), align='<', width='25') + 
+					instruction.mnemonic + ' ' + instruction.operands)			
 			lastMemPosition = instruction.memoryPosition
 
 
