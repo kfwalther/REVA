@@ -19,8 +19,7 @@ def processInputFile(inputFile):
 		
 # Begin code execution here.
 if __name__ == "__main__":
-	# TODO: Determine if we should print to file or std::out.
-	processInputFile('example3.o')
+	processInputFile('randomBinTest.o')
 # 	print('Successful Completion!')
 	
 
