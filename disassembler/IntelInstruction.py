@@ -147,7 +147,6 @@ class IntelInstruction():
 		if self.modrm.mod == '00':
 			self.modrm.regString = IntelDefinitions.registerAddressDict[self.modrm.reg]
 			if self.modrm.rm == '101':
-				# TODO: Check if this interpretation of the MODRM definition is correct...
 				self.modrm.rmString = self.DISP32
 			else:
 				self.modrm.rmString = '[' + IntelDefinitions.registerAddressDict[self.modrm.rm] + ']'
